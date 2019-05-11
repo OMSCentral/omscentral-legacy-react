@@ -105,7 +105,7 @@ function Navigator(props: Props & DrawerProps) {
   return (
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
-        <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>Paperbase</ListItem>
+        <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>OMSCentral</ListItem>
         <ListItem className={clsx(classes.item, classes.itemCategory)}>
           <ListItemIcon>
             <HomeIcon />
