@@ -12,7 +12,9 @@ import IconButton from "@material-ui/core/IconButton"
 import { withStyles, Theme } from "@material-ui/core/styles"
 import SearchIcon from "@material-ui/icons/Search"
 import RefreshIcon from "@material-ui/icons/Refresh"
-
+import firebase from "firebase/app"
+import { useObjectVal } from "react-firebase-hooks/database"
+import SimpleTable from "./Table"
 const styles = (theme: Theme) => ({
   paper: {
     maxWidth: 936,
@@ -49,6 +51,9 @@ type Props = {
 function Content(props: Props) {
   const { classes } = props
 
+  const { error, loading, value } = useObjectVal(firebase.database().ref("courses"))
+  console.log({ value })
+
   return (
     <Paper className={classes.paper}>
       <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
@@ -82,7 +87,9 @@ function Content(props: Props) {
       </AppBar>
       <div className={classes.contentWrapper}>
         <Typography color="textSecondary" align="center">
-          No users for this project yet
+          {error && <strong>Error: {error}</strong>}
+          {loading && <span>List: Loading...</span>}
+          {!loading && value && <SimpleTable courses={value} />}
         </Typography>
       </div>
     </Paper>
