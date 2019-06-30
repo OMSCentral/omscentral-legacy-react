@@ -10,76 +10,73 @@ import ListItemText from "@material-ui/core/ListItemText"
 import HomeIcon from "@material-ui/icons/Home"
 import PeopleIcon from "@material-ui/icons/People"
 import DnsRoundedIcon from "@material-ui/icons/DnsRounded"
-import PermMediaOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActual"
-import PublicIcon from "@material-ui/icons/Public"
-import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet"
-import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent"
-import TimerIcon from "@material-ui/icons/Timer"
-import SettingsIcon from "@material-ui/icons/Settings"
-import PhonelinkSetupIcon from "@material-ui/icons/PhonelinkSetup"
+import { Router, Link } from "@reach/router"
+// import PermMediaOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActual"
+// import PublicIcon from "@material-ui/icons/Public"
+// import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet"
+// import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent"
+// import TimerIcon from "@material-ui/icons/Timer"
+// import SettingsIcon from "@material-ui/icons/Settings"
+// import PhonelinkSetupIcon from "@material-ui/icons/PhonelinkSetup"
 
 const categories = [
   {
-    id: "Develop",
+    id: "Reviews",
     children: [
-      { id: "Authentication", icon: <PeopleIcon />, active: true },
-      { id: "Database", icon: <DnsRoundedIcon /> },
-      { id: "Storage", icon: <PermMediaOutlinedIcon /> },
-      { id: "Hosting", icon: <PublicIcon /> },
-      { id: "Functions", icon: <SettingsEthernetIcon /> },
-      { id: "ML Kit", icon: <SettingsInputComponentIcon /> }
-    ]
-  },
-  {
-    id: "Quality",
-    children: [
-      { id: "Analytics", icon: <SettingsIcon /> },
-      { id: "Performance", icon: <TimerIcon /> },
-      { id: "Test Lab", icon: <PhonelinkSetupIcon /> }
+      { id: "Courses", route: "courses", icon: <PeopleIcon /> },
+      { id: "Reviews", route: "reviews", icon: <DnsRoundedIcon /> }
+      // { id: "Storage", icon: <PermMediaOutlinedIcon /> },
+      // { id: "Hosting", icon: <PublicIcon /> },
+      // { id: "Functions", icon: <SettingsEthernetIcon /> },
+      // { id: "ML Kit", icon: <SettingsInputComponentIcon /> }
     ]
   }
+  // {
+  //   id: "Quality",
+  //   children: [
+  //     { id: "Analytics", icon: <SettingsIcon /> },
+  //     { id: "Performance", icon: <TimerIcon /> },
+  //     { id: "Test Lab", icon: <PhonelinkSetupIcon /> }
+  //   ]
+  // }
 ]
 
 const styles = (theme: Theme) => ({
   categoryHeader: {
-    paddingTop: 16,
-    paddingBottom: 16
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
   },
   categoryHeaderPrimary: {
     color: theme.palette.common.white
   },
   item: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    color: "rgba(255, 255, 255, 0.7)"
+    paddingTop: 1,
+    paddingBottom: 1,
+    color: "rgba(255, 255, 255, 0.7)",
+    "&:hover,&:focus": {
+      backgroundColor: "rgba(255, 255, 255, 0.08)"
+    }
   },
   itemCategory: {
     backgroundColor: "#232f3e",
     boxShadow: "0 -1px 0 #404854 inset",
-    paddingTop: 16,
-    paddingBottom: 16
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
   },
   firebase: {
     fontSize: 24,
-    fontFamily: theme.typography.fontFamily,
     color: theme.palette.common.white
-  },
-  itemActionable: {
-    "&:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.08)"
-    }
   },
   itemActiveItem: {
     color: "#4fc3f7"
   },
   itemPrimary: {
-    color: "inherit",
-    fontSize: theme.typography.fontSize,
-    "&$textDense": {
-      fontSize: theme.typography.fontSize
-    }
+    color: "inherit"
   },
-  textDense: {},
+  itemIcon: {
+    minWidth: "auto",
+    marginRight: theme.spacing(2)
+  },
   divider: {
     marginTop: theme.spacing(2)
   }
@@ -94,9 +91,8 @@ type Props = {
     categoryHeaderPrimary: string
     categoryHeader: string
     divider: string
-    textDense: string
     itemActiveItem: string
-    itemActionable: string
+    itemIcon: string
   }
 }
 function Navigator(props: Props & DrawerProps) {
@@ -107,7 +103,7 @@ function Navigator(props: Props & DrawerProps) {
       <List disablePadding>
         <ListItem className={clsx(classes.firebase, classes.item, classes.itemCategory)}>OMSCentral</ListItem>
         <ListItem className={clsx(classes.item, classes.itemCategory)}>
-          <ListItemIcon>
+          <ListItemIcon className={classes.itemIcon}>
             <HomeIcon />
           </ListItemIcon>
           <ListItemText
@@ -115,7 +111,7 @@ function Navigator(props: Props & DrawerProps) {
               primary: classes.itemPrimary
             }}
           >
-            Project Overview
+            Home
           </ListItemText>
         </ListItem>
         {categories.map(({ id, children }) => (
@@ -129,24 +125,26 @@ function Navigator(props: Props & DrawerProps) {
                 {id}
               </ListItemText>
             </ListItem>
-            {children.map(({ id: childId, icon, active }) => (
-              <ListItem
-                button
-                dense
-                key={childId}
-                className={clsx(classes.item, classes.itemActionable, active && classes.itemActiveItem)}
-              >
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText
-                  classes={{
-                    primary: classes.itemPrimary,
-                    textDense: classes.textDense
-                  }}
-                >
-                  {childId}
-                </ListItemText>
-              </ListItem>
-            ))}
+
+            {children.map(({ id: childId, icon, route }) => {
+              const isActive = window.location.pathname.slice(1).startsWith(route)
+              // console.log({ route, isActive, class: classes.itemActiveItem })
+              return (
+                <Link key={childId} to={route}>
+                  <ListItem button key={childId} className={clsx(classes.item, isActive && classes.itemActiveItem)}>
+                    <ListItemIcon className={classes.itemIcon}>{icon}</ListItemIcon>
+                    <ListItemText
+                      classes={{
+                        primary: classes.itemPrimary
+                      }}
+                    >
+                      {childId}
+                    </ListItemText>
+                  </ListItem>
+                </Link>
+              )
+            })}
+
             <Divider className={classes.divider} />
           </React.Fragment>
         ))}
@@ -154,5 +152,18 @@ function Navigator(props: Props & DrawerProps) {
     </Drawer>
   )
 }
+
+// type LIType = {
+//   id: string
+//   icon: React.ReactElement
+//   classes: Props["classes"]
+//   isPartiallyCurrent?: boolean`
+// }
+// function LIComponent(props: LIType) {
+//   const { id, icon, classes, isPartiallyCurrent } = props
+//   console.log({ isPartiallyCurrent, props })
+//   return (
+//   )
+// }
 
 export default withStyles(styles)(Navigator)

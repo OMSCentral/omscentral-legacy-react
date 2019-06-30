@@ -6,7 +6,8 @@ import TableCell from "@material-ui/core/TableCell"
 import TableHead from "@material-ui/core/TableHead"
 import TableRow from "@material-ui/core/TableRow"
 import Paper from "@material-ui/core/Paper"
-import { Course } from "./type"
+import { Link } from "@reach/router"
+import { Course } from "./types"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,10 +21,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 )
-
-function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-  return { name, calories, fat, carbs, protein }
-}
 
 function SimpleTable({ courses }: { courses: { [key: string]: Course } }) {
   const classes = useStyles()
@@ -49,7 +46,7 @@ function SimpleTable({ courses }: { courses: { [key: string]: Course } }) {
             return (
               <TableRow key={key}>
                 <TableCell component="th" scope="row">
-                  {key}
+                  <Link to={`/courses/${key}`}>{key}</Link>
                 </TableCell>
                 <TableCell>{course.name}</TableCell>
                 {/* <TableCell align="right">{course.department}</TableCell>

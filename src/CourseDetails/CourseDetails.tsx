@@ -14,7 +14,7 @@ import SearchIcon from "@material-ui/icons/Search"
 import RefreshIcon from "@material-ui/icons/Refresh"
 import firebase from "firebase/app"
 import { useObjectVal } from "react-firebase-hooks/database"
-import SimpleTable from "./Table"
+import CourseDetailsReviewsTable from "./CourseDetailsReviewsTable"
 const styles = (theme: Theme) => ({
   paper: {
     maxWidth: 936,
@@ -47,15 +47,39 @@ type Props = {
     contentWrapper: string
     addUser: string
   }
+  courseID?: string
+  path?: string
 }
-function Content(props: Props) {
-  const { classes } = props
+function CourseDetails(props: Props) {
+  const { classes, courseID } = props
 
-  const { error, loading, value } = useObjectVal(firebase.database().ref("courses"))
-  console.log({ value })
+  const { error, loading, value } = useObjectVal(firebase.database().ref("courses/" + courseID))
+  // const temp = useObjectVal(firebase.database().ref("reviews/-LaBOOf9SCpk0Xl28kQI"))
+  // const temp = useObjectVal(firebase.database().ref("reviews/-LBIlHqAvnrp2YRZvZzF"))
+  if (!courseID) return <div>no courseid specified</div>
+  // console.log({ value, temp })
 
   return (
     <Paper className={classes.paper}>
+      <div className={classes.contentWrapper}>
+        {/* <Typography color="textSecondary" align="center"> */}
+        {error && <strong>Error: {error}</strong>}
+        {loading && <span>List: Loading...</span>}
+        {!loading && value && (
+          <div>
+            <h1>
+              {value.id}: {value.name}
+            </h1>
+            <ul>
+              <li>Difficulty: {round(value.average.difficulty)}</li>
+              <li>Rating: {round(value.average.rating)}</li>
+              <li>Workload: {round(value.average.workload)}</li>
+            </ul>
+            <CourseDetailsReviewsTable reviewIDs={Object.keys(value.reviews).sort((a, b) => (a > b ? -1 : 1))} />
+          </div>
+        )}
+        {/* </Typography> */}
+      </div>
       <AppBar className={classes.searchBar} position="static" color="default" elevation={0}>
         <Toolbar>
           <Grid container spacing={2} alignItems="center">
@@ -85,15 +109,12 @@ function Content(props: Props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      <div className={classes.contentWrapper}>
-        <Typography color="textSecondary" align="center">
-          {error && <strong>Error: {error}</strong>}
-          {loading && <span>List: Loading...</span>}
-          {!loading && value && <SimpleTable courses={value} />}
-        </Typography>
-      </div>
     </Paper>
   )
 }
 
-export default withStyles(styles)(Content)
+function round(num: number) {
+  return Math.round(num * 10) / 10
+}
+
+export default withStyles(styles)(CourseDetails)

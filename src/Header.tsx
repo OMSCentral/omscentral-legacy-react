@@ -97,7 +97,7 @@ function Header(props: Props) {
           <Grid container alignItems="center" spacing={1}>
             <Grid item xs>
               <Typography color="inherit" variant="h5">
-                Authentication
+                Courses
               </Typography>
             </Grid>
             <Grid item>

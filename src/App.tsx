@@ -4,8 +4,11 @@ import { ThemeProvider } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Hidden from "@material-ui/core/Hidden"
 import Navigator from "./Navigator"
-import Content from "./Content"
+import CourseList from "./CourseList"
+import CourseDetails from "./CourseDetails/CourseDetails"
 import Header from "./Header"
+
+import { Router } from "@reach/router"
 
 let theme = createMuiTheme({
   typography: {
@@ -195,7 +198,10 @@ class Paperbase extends React.Component<Props, State> {
           <div className={classes.appContent}>
             <Header onDrawerToggle={this.handleDrawerToggle} />
             <main className={classes.mainContent}>
-              <Content />
+              <Router>
+                <CourseList path="/" default />
+                <CourseDetails path="courses/:courseID" />
+              </Router>
             </main>
           </div>
         </div>
