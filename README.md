@@ -4,7 +4,8 @@ this is a rewrite of the OMSCentral interface in React, TypeScript, and Material
 
 ## Development process
 
-- to be completed
+- recordings
+  - adding course details page: https://youtu.be/qfwLETCiXeg
 - firebase options
   - https://github.com/dtinth/fiery
   - https://www.npmjs.com/package/react-firebase-hooks
