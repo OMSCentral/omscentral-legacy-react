@@ -1,100 +1,98 @@
-import React from "react"
-import { createStyles, Theme, makeStyles } from "@material-ui/core/styles"
-import Table from "@material-ui/core/Table"
-import TableBody from "@material-ui/core/TableBody"
-import TableCell from "@material-ui/core/TableCell"
-import TableHead from "@material-ui/core/TableHead"
-import TableRow from "@material-ui/core/TableRow"
-import Paper from "@material-ui/core/Paper"
-import { Link } from "@reach/router"
-import firebase from "firebase/app"
+import React from 'react'
+import MaterialTable from 'material-table'
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
-import { useObjectVal } from "react-firebase-hooks/database"
-import { Review } from "../types"
+import ReactMarkdown from 'react-markdown'
+
+import firebase from 'firebase/app'
+
+import { useObjectVal } from 'react-firebase-hooks/database'
+import { Review } from '../types'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: "100%",
+      width: '100%',
       marginTop: theme.spacing(3),
-      overflowX: "auto"
+      overflowX: 'auto',
     },
     table: {
-      minWidth: 650
-    }
-  })
+      minWidth: 650,
+    },
+  }),
 )
 
 function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
-  const classes = useStyles()
-
+  const [data, setData] = React.useState([] as any)
+  React.useEffect(() => {
+    ;(async function() {
+      const _data = await Promise.all(
+        reviewIDs.map(async (reviewID: string) => {
+          const potato: any = await firebase
+            .database()
+            .ref('reviews/' + reviewID)
+            .once('value')
+          const data: Review = potato.val()
+          if (!data) {
+            console.error('Missing review', { reviewID })
+            return null
+          }
+          return {
+            reviewID,
+            Date: new Intl.DateTimeFormat('default').format(data.created),
+            Semester: data.semester,
+            Rating: data.rating || 'N/A',
+            Difficulty: data.difficulty,
+            Workload: data.workload,
+            FullReview: data.text,
+            ShortReview: data.text
+              .replace('#', '')
+              .trim()
+              .slice(0, 20),
+          }
+        }),
+      )
+      setData(_data.filter(Boolean))
+    })()
+  }, [])
+  if (!data.length) return null
   return (
-    <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Semester</TableCell>
-            <TableCell align="right">Rating</TableCell>
-            <TableCell align="right">Difficulty</TableCell>
-            <TableCell align="right">Workload</TableCell>
-            <TableCell align="right">Reviews</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {reviewIDs.map((reviewID: string) => (
-            <ReviewTableRow key={reviewID} reviewID={reviewID} />
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
-  )
-}
-
-function ReviewTableRow({ reviewID }: { reviewID: string }) {
-  const { error, loading, value } = useObjectVal(firebase.database().ref("reviews/" + reviewID))
-  const [showReview, setShowReview] = React.useState(false)
-
-  if (loading)
-    return (
-      <TableRow key={reviewID}>
-        <TableCell component="th" scope="row">
-          loading...
-        </TableCell>
-      </TableRow>
-    )
-  if (error) {
-    console.error({ error })
-    return (
-      <TableRow key={reviewID}>
-        <TableCell component="th" scope="row">
-          error
-        </TableCell>
-      </TableRow>
-    )
-  }
-  let review = value as Review
-
-  if (!review) {
-    console.error("Missing review", { review, reviewID })
-    return null
-  }
-  console.log({ review })
-  return (
-    <TableRow key={reviewID}>
-      <TableCell component="th" scope="row">
-        <Link to={`review/${reviewID}`}>{new Intl.DateTimeFormat("default").format(review.created)}</Link>
-      </TableCell>
-      <TableCell>{review.semester}</TableCell>
-      <TableCell align="right">{review.rating || "N/A"}</TableCell>
-      {/* <TableCell align="right">{round(course.average.difficulty)}</TableCell> */}
-      <TableCell align="right">{review.difficulty}</TableCell>
-      <TableCell align="right">{review.workload}</TableCell>
-      <TableCell align="right">
-        <button onClick={() => setShowReview(!showReview)}>{showReview ? "-" : "+"}</button>
-        {!showReview ? review.text.slice(0, 20) : review.text}
-      </TableCell>
-    </TableRow>
+    <MaterialTable
+      title="Course Details"
+      columns={[
+        { title: 'Date', field: 'Date', type: 'string' },
+        { title: 'Semester', field: 'Semester', type: 'string', defaultGroupOrder: 0, defaultGroupSort: 'desc' },
+        { title: 'Rating', field: 'Rating', type: 'numeric' },
+        { title: 'Difficulty', field: 'Difficulty', type: 'numeric' },
+        { title: 'Workload', field: 'Workload', type: 'numeric' },
+        { title: 'ShortReview', field: 'ShortReview', type: 'string' },
+        { title: 'FullReview', field: 'FullReview', type: 'string', hidden: true },
+        { title: 'reviewID', field: 'reviewId', type: 'string', hidden: true },
+      ]}
+      data={data}
+      detailPanel={(review) => {
+        console.log({ review })
+        if (!review) {
+          console.error('Missing review', review.reviewID)
+          return <div>missing review</div>
+        }
+        // return <div>sldkjsldkjslkj</div>
+        return <ReactMarkdown source={review.FullReview} />
+      }}
+      options={{
+        filtering: true,
+        pageSize: Math.min(data.length, 100),
+        searchFieldStyle: {
+          fontSize: '0.8rem',
+        },
+        rowStyle: {
+          padding: 5,
+        },
+        grouping: true,
+        padding: 'dense',
+        exportButton: true,
+      }}
+    />
   )
 }
 
