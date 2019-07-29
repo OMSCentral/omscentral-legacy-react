@@ -7,6 +7,8 @@ import Navigator from './Navigator'
 import CourseList from './CourseList'
 import CourseDetails from './CourseDetails/CourseDetails'
 import Header from './Header'
+import NotFound from './NotFound'
+import NewReview from './NewReview/NewReview'
 import './App.css'
 
 import { Router } from '@reach/router'
@@ -201,8 +203,10 @@ class Paperbase extends React.Component<Props, State> {
             <Header onDrawerToggle={this.handleDrawerToggle} />
             <main className={classes.mainContent}>
               <Router>
-                <CourseList path="/" default />
+                <CourseList path="/courses" />
                 <CourseDetails path="courses/:courseID" />
+                <NewReview path="/reviews/new" />
+                <NotFound default />
               </Router>
             </main>
           </div>

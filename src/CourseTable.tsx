@@ -1,24 +1,24 @@
 import React from 'react'
 import MaterialTable from 'material-table'
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+// import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { Link } from '@reach/router'
 import { Course } from './types'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      marginTop: theme.spacing(3),
-      overflowX: 'auto',
-    },
-    table: {
-      minWidth: 650,
-    },
-  }),
-)
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     root: {
+//       width: '100%',
+//       marginTop: theme.spacing(3),
+//       overflowX: 'auto',
+//     },
+//     table: {
+//       minWidth: 650,
+//     },
+//   }),
+// )
 
 function SimpleTable({ courses }: { courses: { [key: string]: Course } }) {
-  const classes = useStyles()
+  // const classes = useStyles()
 
   return (
     // <MuiThemeProvider theme={theme}>

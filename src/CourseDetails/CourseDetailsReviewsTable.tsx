@@ -1,26 +1,26 @@
 import React from 'react'
 import MaterialTable from 'material-table'
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+// import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
 import ReactMarkdown from 'react-markdown'
 
 import firebase from 'firebase/app'
 
-import { useObjectVal } from 'react-firebase-hooks/database'
+// import { useObjectVal } from 'react-firebase-hooks/database'
 import { Review } from '../types'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      marginTop: theme.spacing(3),
-      overflowX: 'auto',
-    },
-    table: {
-      minWidth: 650,
-    },
-  }),
-)
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     root: {
+//       width: '100%',
+//       marginTop: theme.spacing(3),
+//       overflowX: 'auto',
+//     },
+//     table: {
+//       minWidth: 650,
+//     },
+//   }),
+// )
 
 function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
   const [data, setData] = React.useState([] as any)
@@ -54,7 +54,7 @@ function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
       )
       setData(_data.filter(Boolean))
     })()
-  }, [])
+  }, [reviewIDs])
   if (!data.length) return null
   return (
     <MaterialTable
@@ -65,9 +65,9 @@ function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
         { title: 'Rating', field: 'Rating', type: 'numeric' },
         { title: 'Difficulty', field: 'Difficulty', type: 'numeric' },
         { title: 'Workload', field: 'Workload', type: 'numeric' },
-        { title: 'ShortReview', field: 'ShortReview', type: 'string' },
-        { title: 'FullReview', field: 'FullReview', type: 'string', hidden: true },
-        { title: 'reviewID', field: 'reviewId', type: 'string', hidden: true },
+        { title: 'ShortReview', field: 'ShortReview', type: 'string', grouping: false },
+        { title: 'FullReview', field: 'FullReview', type: 'string', hidden: true, grouping: false },
+        { title: 'reviewID', field: 'reviewId', type: 'string', hidden: true, grouping: false },
       ]}
       data={data}
       detailPanel={(review) => {
