@@ -7,7 +7,26 @@ import NativeSelect from './NativeSelect'
 import CustomTextField from './CustomTextField'
 import { useFormik } from 'formik'
 import Button from '@material-ui/core/Button'
-import initialValues from './initialValues'
+import { Review } from '../reviews'
+
+const initialValues = {
+  program: 'OMSCS',
+  semester: 'Summer 2019',
+  // rating: 'Neutral' as 'Strong Dislike' | 'Dislike' | 'Neutral' | 'Like' | 'LOVE!',
+  rating: 2,
+  workload: undefined as number | undefined,
+  difficulty: 2,
+  // difficulty: 'Medium' as 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard' | undefined,
+  course: undefined as undefined | string,
+}
+const difficultyMap = {
+  'Very Easy': 1,
+  Easy: 2,
+  Medium: 3,
+  Hard: 4,
+  'Very Hard': 5,
+}
+const ratingMap = { 'Strong Dislike': 1, Dislike: 1, Neutral: 1, Like: 1, 'LOVE!': 1 }
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,16 +48,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface State {
-  name: string
-  age: string
-  multiline: string
-  currency: string
-}
 function makeLabelValueArray(strs: string[]) {
   return strs.map((str) => ({
     label: str,
     value: str,
+  }))
+}
+function makeLabelValueArray2(strs: string[]) {
+  return strs.map((str, i) => ({
+    label: str,
+    value: i,
   }))
 }
 const NewReview: (args: { path?: string }) => JSX.Element = () => {
@@ -46,12 +65,19 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
 
   const formik = useFormik({
     initialValues,
-    onSubmit: (values, actions) => {
-      console.log({ values })
-      setTimeout(() => {
-        // alert(JSON.stringify(values, null, 2))
-        actions.setSubmitting(false)
-      }, 5000)
+    onSubmit: (values /*actions*/) => {
+      const { difficulty, rating, ..._newReview } = values
+      const newReview: Review = _newReview
+      // if (!difficulty) throw new Error('invalid difficulty setting')
+      // if (!rating) throw new Error('invalid rating setting')
+      newReview.difficulty = Number(difficulty)
+      newReview.rating = Number(rating)
+
+      console.log({ newReview, values })
+      // setTimeout(() => {
+      //   // alert(JSON.stringify(values, null, 2))
+      //   actions.setSubmitting(false)
+      // }, 5000)
     },
   })
   return (
@@ -64,7 +90,8 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
       />
       <NativeSelect
         className={classes.textField}
-        name="Program"
+        name="program"
+        label="Program (OMSCS or OMSA)"
         required
         optionArray={makeLabelValueArray(['OMSCS', 'OMSA'])}
         onChange={(e) => console.log(e.target.value)}
@@ -72,7 +99,8 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
       />
       <NativeSelect
         className={classes.textField}
-        name="Semester"
+        name="semester"
+        label="Semester"
         required
         optionArray={makeLabelValueArray(['Summer 2019', 'Fall 2019', 'Spring 2019', 'Fall 2018'])}
         onChange={(e) => console.log(e.target.value)}
@@ -80,114 +108,36 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
       />
       <NativeSelect
         className={classes.textField}
-        name="Rating"
+        name="rating"
+        label="Rating"
         required
-        optionArray={makeLabelValueArray(['Strong Dislike', 'Dislike', 'Neutral', 'Like', 'LOVE!'].reverse())}
+        optionArray={makeLabelValueArray2(['Strong Dislike', 'Dislike', 'Neutral', 'Like', 'LOVE!'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <NativeSelect
         className={classes.textField}
-        name="Difficulty"
+        name="difficulty"
+        label="Difficulty"
         required
-        optionArray={makeLabelValueArray(['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'].reverse())}
+        optionArray={makeLabelValueArray2(['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <CustomTextField
         id="standard-number"
         label="Workload (hrs/week)"
-        name="Workload"
+        name="workload"
         required
         type="number"
         className={classes.textField}
         formik={formik}
       />
-      {/* <TextField
-    id="standard-name"
-    label="Name"
-    className={classes.textField}
-    value={values.name}
-    onChange={handleChange('name')}
-    margin="normal"
-  />
-  <TextField
-    id="standard-multiline-flexible"
-    label="Multiline"
-    multiline
-    rowsMax="4"
-    value={values.multiline}
-    onChange={handleChange('multiline')}
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-multiline-static"
-    label="Multiline"
-    multiline
-    rows="4"
-    defaultValue="Default Value"
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-helperText"
-    label="Helper text"
-    defaultValue="Default Value"
-    className={classes.textField}
-    helperText="Some important text"
-    margin="normal"
-  />
-  <TextField
-    id="standard-with-placeholder"
-    label="With placeholder"
-    placeholder="Placeholder"
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-textarea"
-    label="With placeholder multiline"
-    placeholder={`placoleder`}
-    multiline
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-search"
-    label="Search field"
-    type="search"
-    className={classes.textField}
-    margin="normal"
-  />
-
-  <TextField
-    id="standard-full-width"
-    label="Label"
-    style={{ margin: 8 }}
-    placeholder="Placeholder"
-    helperText="Full width!"
-    fullWidth
-    margin="normal"
-    InputLabelProps={{
-      shrink: true,
-    }}
-  />
-  <TextField
-    id="standard-bare"
-    className={classes.textField}
-    defaultValue="Bare"
-    margin="normal"
-    inputProps={{ 'aria-label': 'bare' }}
-  /> */}
-
-      {/* <button type="submit">Submit</button> */}
       <Button
         variant="contained"
         type="submit"
         color="primary"
         disabled={!formik.dirty || !formik.isValid || formik.isSubmitting}
-        //  className={classes.button}
       >
         Submit
       </Button>

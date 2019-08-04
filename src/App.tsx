@@ -203,6 +203,7 @@ class Paperbase extends React.Component<Props, State> {
             <Header onDrawerToggle={this.handleDrawerToggle} />
             <main className={classes.mainContent}>
               <Router>
+                <CourseList path="/" />
                 <CourseList path="/courses" />
                 <CourseDetails path="courses/:courseID" />
                 <NewReview path="/reviews/new" />

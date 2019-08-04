@@ -1,5 +1,3 @@
-// using this for ambient type definitions
-
 export type Course = {
   average: {
     difficulty: number
