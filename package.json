@@ -6,6 +6,7 @@
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
     "@reach/router": "^1.2.1",
+    "@swyx/hooks": "^0.0.20",
     "downshift": "^3.2.10",
     "firebase": "^6.0.2",
     "formik": "^2.0.1-rc.12",
@@ -15,7 +16,8 @@
     "react-firebase-hooks": "^1.2.1",
     "react-markdown": "^4.1.0",
     "react-scripts": "^3.0.1",
-    "typescript": "3.4.5"
+    "typescript": "3.4.5",
+    "validate.js": "^0.13.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -41,9 +43,9 @@
   "devDependencies": {
     "@types/jest": "24.0.12",
     "@types/node": "12.0.0",
+    "@types/reach__router": "^1.2.4",
     "@types/react": "16.8.17",
     "@types/react-dom": "16.8.4",
-    "@types/reach__router": "^1.2.4",
     "lodash.template": "4.5.0"
   }
 }
