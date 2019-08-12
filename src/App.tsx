@@ -9,6 +9,8 @@ import CourseDetails from './CourseDetails/CourseDetails'
 import Header from './Header'
 import NotFound from './NotFound'
 import NewReview from './NewReview/NewReview'
+
+// import { AuthProvider } from './unused_Auth/AuthContext'
 import './App.css'
 
 import { Router } from '@reach/router'
@@ -169,52 +171,45 @@ type Props = {
     mainContent: string
   }
 }
-type State = { mobileOpen: boolean }
-class Paperbase extends React.Component<Props, State> {
-  state = {
-    mobileOpen: false,
-  }
 
-  handleDrawerToggle = () => {
-    this.setState((state) => ({ mobileOpen: !state.mobileOpen }))
-  }
+function Paperbase(props: Props) {
+  const [mobileOpen, setMobileOpen] = React.useState(false)
+  const { classes } = props
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen)
+  const [isSignedIn, setisSignedIn] = React.useState(false)
 
-  render() {
-    const { classes } = this.props
-
-    return (
-      <ThemeProvider theme={theme}>
-        <div className={classes.root}>
-          <CssBaseline />
-          <nav className={classes.drawer}>
-            <Hidden smUp implementation="js">
-              <Navigator
-                PaperProps={{ style: { width: drawerWidth } }}
-                variant="temporary"
-                open={this.state.mobileOpen}
-                onClose={this.handleDrawerToggle}
-              />
-            </Hidden>
-            <Hidden xsDown implementation="css">
-              <Navigator PaperProps={{ style: { width: drawerWidth } }} />
-            </Hidden>
-          </nav>
-          <div className={classes.appContent}>
-            <Header onDrawerToggle={this.handleDrawerToggle} />
-            <main className={classes.mainContent}>
-              <Router>
-                <CourseList path="/" />
-                <CourseList path="/courses" />
-                <CourseDetails path="courses/:courseID" />
-                <NewReview path="/reviews/new" />
-                <NotFound default />
-              </Router>
-            </main>
-          </div>
+  return (
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <CssBaseline />
+        <nav className={classes.drawer}>
+          <Hidden smUp implementation="js">
+            <Navigator
+              PaperProps={{ style: { width: drawerWidth } }}
+              variant="temporary"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+            />
+          </Hidden>
+          <Hidden xsDown implementation="css">
+            <Navigator PaperProps={{ style: { width: drawerWidth } }} />
+          </Hidden>
+        </nav>
+        <div className={classes.appContent}>
+          <Header onDrawerToggle={handleDrawerToggle} />
+          <main className={classes.mainContent}>
+            <Router>
+              <CourseList path="/" />
+              <CourseList path="/courses" />
+              <CourseDetails path="courses/:courseID" />
+              <NewReview path="/reviews/new" />
+              <NotFound default />
+            </Router>
+          </main>
         </div>
-      </ThemeProvider>
-    )
-  }
+      </div>
+    </ThemeProvider>
+  )
 }
 
 export default withStyles(styles)(Paperbase)

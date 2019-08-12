@@ -1823,6 +1823,11 @@
     "@svgr/plugin-svgo" "^4.0.3"
     loader-utils "^1.1.0"
 
+"@swyx/hooks@^0.0.20":
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/@swyx/hooks/-/hooks-0.0.20.tgz#60edef17000ed553c707b8217c467210752c1187"
+  integrity sha512-gIMsLCyxWtRlucqqf+L0NiD5uPwvv5CM4aGHu/diWnUCgsz0qSiQlz5Xjh1CLcySoPf/RKX64b2Ru9bdMQ0+vQ==
+
 "@types/babel__core@^7.1.0":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.1.tgz#ce9a9e5d92b7031421e1d0d74ae59f572ba48be6"
@@ -4092,6 +4097,11 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
+dialog-polyfill@^0.4.7:
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/dialog-polyfill/-/dialog-polyfill-0.4.10.tgz#c4ea68a0deed4abb59a6a2a025c548b278cd532e"
+  integrity sha512-j5yGMkP8T00UFgyO+78OxiN5vC5dzRQF3BEio+LhNvDbyfxWBsi3sfPArDm54VloaJwy2hm3erEiDWqHRC8rzw==
+
 diff-sequences@^24.3.0:
   version "24.3.0"
   resolved "https://registry.yarnpkg.com/diff-sequences/-/diff-sequences-24.3.0.tgz#0f20e8a1df1abddaf4d9c226680952e64118b975"
@@ -4982,6 +4992,13 @@ firebase@^6.0.2:
     "@firebase/performance" "0.2.2"
     "@firebase/polyfill" "0.3.14"
     "@firebase/storage" "0.2.16"
+
+firebaseui@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-4.1.0.tgz#ccd5f20291ac724d15d39217868d7291137780a1"
+  integrity sha512-jZrCv9v8+Dj1mE4yAVeXUw1lBqayFYpXfD3cEdXmx2aZxwF1kpMJuCocnsZeXaFkTcFjYRcjjxakIZmjVp58/A==
+  dependencies:
+    dialog-polyfill "^0.4.7"
 
 flat-cache@^2.0.1:
   version "2.0.1"
@@ -9341,6 +9358,13 @@ react-firebase-hooks@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-firebase-hooks/-/react-firebase-hooks-1.2.1.tgz#6ebde0ff677664d7770668796d360f6a2f4b0bcc"
   integrity sha512-eTPrukT0xWfuMpTYwbG/P/jTvTrkD8V7FYGtljVDSVLcihXP7Cs791zngPwbwFBXwPpa7pleGM1anAX5/GfnQw==
+
+react-firebaseui@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-firebaseui/-/react-firebaseui-4.0.0.tgz#6e1892831b2a0ee86d2dcae16c4b724cf299d566"
+  integrity sha512-sQjVIXjahJ6YcjBRKmjW0wQb8wApi8AcFBa14H+TSEZWkRxPgQ1C4370P3FJubGXGEmxkwZfddqDk4/p5xW1uA==
+  dependencies:
+    firebaseui "^4.1.0"
 
 react-is@^16.5.2, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.4, react-is@^16.8.6:
   version "16.8.6"
