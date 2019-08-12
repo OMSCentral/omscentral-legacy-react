@@ -30,6 +30,7 @@ function renderInput(inputProps: RenderInputProps) {
   // console.log({ InputProps })
   return (
     <TextField
+      required
       InputProps={{
         inputRef: ref,
         classes: {

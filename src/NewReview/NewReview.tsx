@@ -7,8 +7,29 @@ import NativeSelect from './NativeSelect'
 import CustomTextField from './CustomTextField'
 import { useFormik } from 'formik'
 import Button from '@material-ui/core/Button'
-import initialValues from './initialValues'
+import { Review } from '../reviews'
+import firebase from 'firebase/app'
+import { User } from 'firebase'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 
+/**
+ *
+ *
+ * note: there are a lot of fields left yet to be implemented
+ *
+ * TODO
+ *
+ */
+
+const initialValues: Review = {
+  program: 1,
+  semester: '2019-2',
+  rating: 3,
+  workload: undefined,
+  difficulty: 3,
+  course: undefined,
+  text: '',
+}
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -29,31 +50,72 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface State {
-  name: string
-  age: string
-  multiline: string
-  currency: string
-}
-function makeLabelValueArray(strs: string[]) {
-  return strs.map((str) => ({
+const ChoosableSemesters = [
+  { label: 'Fall 2018', value: '2018-3' },
+  { label: 'Spring 2019', value: '2019-1' },
+  { label: 'Summer 2019', value: '2019-2' },
+  { label: 'Fall 2019', value: '2019-3' },
+]
+
+function makeLabelValueArray2(strs: string[]) {
+  return strs.map((str, i) => ({
     label: str,
-    value: str,
+    value: i + 1,
   }))
 }
-const NewReview: (args: { path?: string }) => JSX.Element = () => {
+const NewReview: (args: { path?: string; user: User }) => JSX.Element = ({ user }) => {
   const classes = useStyles()
 
-  const formik = useFormik({
+  const formik = useFormik<Review>({
     initialValues,
-    onSubmit: (values, actions) => {
-      console.log({ values })
-      setTimeout(() => {
-        // alert(JSON.stringify(values, null, 2))
-        actions.setSubmitting(false)
-      }, 5000)
+    onSubmit: (values /*actions*/) => {
+      if (!values.difficulty) throw new Error('invalid difficulty setting')
+      if (!values.rating) throw new Error('invalid rating setting')
+      if (!values.course) throw new Error('must select course')
+      // https://github.com/martzcodes/OMSCentral/blob/7cf5bab68a58ae7774b6c6d5ed288a3af2944845/src/app/authed-reviews/authed-review.service.ts#L27
+      const newReview: Review = {
+        created: new Date().getTime(),
+        updated: new Date().getTime(),
+        author: user.uid,
+        course: values.course.split(':')[0],
+        difficulty: Number(values.difficulty),
+        semester: values.semester,
+        text: values.text,
+        workload: values.workload,
+        rating: Number(values.rating),
+        program: values.program,
+        proctortrack: values.proctortrack || '',
+        firstCourse: values.firstCourse || '',
+        previousClasses: values.previousClasses,
+        projects: values.projects,
+        groupProjects: values.groupProjects,
+        tests: values.tests,
+        extraCredit: values.extraCredit || '',
+        moneySpent: values.moneySpent,
+        frontLoad: values.frontLoad || '',
+      }
+      // clear keys that are undefined
+      Object.entries(newReview).forEach(([k, v]) => {
+        if (typeof v === 'undefined') {
+          delete newReview[k]
+        }
+      })
+      console.log({ newReview, values })
+
+      const newReviewRef = firebase
+        .database()
+        .ref('/reviews/')
+        .push(newReview)
+      console.log({ newReviewRef })
+      alert('Review submitted successfully!')
+      formik.resetForm()
+      // setTimeout(() => {
+      //   // alert(JSON.stringify(values, null, 2))
+      //   actions.setSubmitting(false)
+      // }, 5000)
     },
   })
+  const [reviewField, reviewMeta] = formik.getFieldProps({ name: 'text' })
   return (
     <form onSubmit={formik.handleSubmit} className={classes.container} noValidate autoComplete="off">
       <CourseAutoComplete
@@ -64,135 +126,97 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
       />
       <NativeSelect
         className={classes.textField}
-        name="Program"
+        name="program"
+        label="Program (OMSCS or OMSA)"
         required
-        optionArray={makeLabelValueArray(['OMSCS', 'OMSA'])}
+        optionArray={makeLabelValueArray2(['OMSCS', 'OMSA'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <NativeSelect
         className={classes.textField}
-        name="Semester"
+        name="semester"
+        label="Semester"
         required
-        optionArray={makeLabelValueArray(['Summer 2019', 'Fall 2019', 'Spring 2019', 'Fall 2018'])}
+        optionArray={ChoosableSemesters}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <NativeSelect
         className={classes.textField}
-        name="Rating"
+        name="rating"
+        label="Rating"
         required
-        optionArray={makeLabelValueArray(['Strong Dislike', 'Dislike', 'Neutral', 'Like', 'LOVE!'].reverse())}
+        optionArray={makeLabelValueArray2(['Strong Dislike', 'Dislike', 'Neutral', 'Like', 'LOVE!'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <NativeSelect
         className={classes.textField}
-        name="Difficulty"
+        name="difficulty"
+        label="Difficulty"
         required
-        optionArray={makeLabelValueArray(['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'].reverse())}
+        optionArray={makeLabelValueArray2(['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
       <CustomTextField
         id="standard-number"
         label="Workload (hrs/week)"
-        name="Workload"
+        name="workload"
         required
         type="number"
         className={classes.textField}
         formik={formik}
       />
-      {/* <TextField
-    id="standard-name"
-    label="Name"
-    className={classes.textField}
-    value={values.name}
-    onChange={handleChange('name')}
-    margin="normal"
-  />
-  <TextField
-    id="standard-multiline-flexible"
-    label="Multiline"
-    multiline
-    rowsMax="4"
-    value={values.multiline}
-    onChange={handleChange('multiline')}
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-multiline-static"
-    label="Multiline"
-    multiline
-    rows="4"
-    defaultValue="Default Value"
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-helperText"
-    label="Helper text"
-    defaultValue="Default Value"
-    className={classes.textField}
-    helperText="Some important text"
-    margin="normal"
-  />
-  <TextField
-    id="standard-with-placeholder"
-    label="With placeholder"
-    placeholder="Placeholder"
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-textarea"
-    label="With placeholder multiline"
-    placeholder={`placoleder`}
-    multiline
-    className={classes.textField}
-    margin="normal"
-  />
-  <TextField
-    id="standard-search"
-    label="Search field"
-    type="search"
-    className={classes.textField}
-    margin="normal"
-  />
-
-  <TextField
-    id="standard-full-width"
-    label="Label"
-    style={{ margin: 8 }}
-    placeholder="Placeholder"
-    helperText="Full width!"
-    fullWidth
-    margin="normal"
-    InputLabelProps={{
-      shrink: true,
-    }}
-  />
-  <TextField
-    id="standard-bare"
-    className={classes.textField}
-    defaultValue="Bare"
-    margin="normal"
-    inputProps={{ 'aria-label': 'bare' }}
-  /> */}
-
-      {/* <button type="submit">Submit</button> */}
+      <h3>Review</h3>
+      <TextareaAutosize
+        className={classes.textField}
+        aria-label="full text of your review"
+        rows={3}
+        required
+        placeholder="Write your review here, you can use Markdown!"
+        {...reviewField}
+      />
+      {reviewMeta.touched && reviewMeta.error ? <div className="error">{reviewMeta.error}</div> : null}
+      <div className={classes.textField}>. . .</div>
       <Button
         variant="contained"
         type="submit"
         color="primary"
         disabled={!formik.dirty || !formik.isValid || formik.isSubmitting}
-        //  className={classes.button}
       >
         Submit
+      </Button>
+      <Button
+        type="button"
+        color="secondary"
+        onClick={() => {
+          if (window.confirm('are you sure you want to reset the form?')) {
+            formik.resetForm()
+          }
+        }}
+      >
+        Reset
       </Button>
       <div>submitting {JSON.stringify(formik.isSubmitting)}</div>
     </form>
   )
 }
 export default NewReview
+
+/**
+ *
+ * deleted
+ */
+
+// const difficultyMap = {
+//   'Very Easy': 1,
+//   Easy: 2,
+//   Medium: 3,
+//   Hard: 4,
+//   'Very Hard': 5,
+// }
+// const ratingMap = { 'Strong Dislike': 1, Dislike: 1, Neutral: 1, Like: 1, 'LOVE!': 1 }
+// rating: 'Neutral' as 'Strong Dislike' | 'Dislike' | 'Neutral' | 'Like' | 'LOVE!',
+// difficulty: 'Medium' as 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard' | undefined,
