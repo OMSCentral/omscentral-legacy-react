@@ -8,26 +8,28 @@ import CustomTextField from './CustomTextField'
 import { useFormik } from 'formik'
 import Button from '@material-ui/core/Button'
 import { Review } from '../reviews'
+import firebase from 'firebase/app'
+import { User } from 'firebase'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 
-const initialValues = {
-  program: 'OMSCS',
-  semester: 'Summer 2019',
-  // rating: 'Neutral' as 'Strong Dislike' | 'Dislike' | 'Neutral' | 'Like' | 'LOVE!',
-  rating: 2,
-  workload: undefined as number | undefined,
-  difficulty: 2,
-  // difficulty: 'Medium' as 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard' | undefined,
-  course: undefined as undefined | string,
-}
-const difficultyMap = {
-  'Very Easy': 1,
-  Easy: 2,
-  Medium: 3,
-  Hard: 4,
-  'Very Hard': 5,
-}
-const ratingMap = { 'Strong Dislike': 1, Dislike: 1, Neutral: 1, Like: 1, 'LOVE!': 1 }
+/**
+ *
+ *
+ * note: there are a lot of fields left yet to be implemented
+ *
+ * TODO
+ *
+ */
 
+const initialValues: Review = {
+  program: 1,
+  semester: '2019-2',
+  rating: 3,
+  workload: undefined,
+  difficulty: 3,
+  course: undefined,
+  text: '',
+}
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
@@ -48,38 +50,72 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-function makeLabelValueArray(strs: string[]) {
-  return strs.map((str) => ({
-    label: str,
-    value: str,
-  }))
-}
+const ChoosableSemesters = [
+  { label: 'Fall 2018', value: '2018-3' },
+  { label: 'Spring 2019', value: '2019-1' },
+  { label: 'Summer 2019', value: '2019-2' },
+  { label: 'Fall 2019', value: '2019-3' },
+]
+
 function makeLabelValueArray2(strs: string[]) {
   return strs.map((str, i) => ({
     label: str,
-    value: i,
+    value: i + 1,
   }))
 }
-const NewReview: (args: { path?: string }) => JSX.Element = () => {
+const NewReview: (args: { path?: string; user: User }) => JSX.Element = ({ user }) => {
   const classes = useStyles()
 
-  const formik = useFormik({
+  const formik = useFormik<Review>({
     initialValues,
     onSubmit: (values /*actions*/) => {
-      const { difficulty, rating, ..._newReview } = values
-      const newReview: Review = _newReview
-      // if (!difficulty) throw new Error('invalid difficulty setting')
-      // if (!rating) throw new Error('invalid rating setting')
-      newReview.difficulty = Number(difficulty)
-      newReview.rating = Number(rating)
-
+      if (!values.difficulty) throw new Error('invalid difficulty setting')
+      if (!values.rating) throw new Error('invalid rating setting')
+      if (!values.course) throw new Error('must select course')
+      // https://github.com/martzcodes/OMSCentral/blob/7cf5bab68a58ae7774b6c6d5ed288a3af2944845/src/app/authed-reviews/authed-review.service.ts#L27
+      const newReview: Review = {
+        created: new Date().getTime(),
+        updated: new Date().getTime(),
+        author: user.uid,
+        course: values.course.split(':')[0],
+        difficulty: Number(values.difficulty),
+        semester: values.semester,
+        text: values.text,
+        workload: values.workload,
+        rating: Number(values.rating),
+        program: values.program,
+        proctortrack: values.proctortrack || '',
+        firstCourse: values.firstCourse || '',
+        previousClasses: values.previousClasses,
+        projects: values.projects,
+        groupProjects: values.groupProjects,
+        tests: values.tests,
+        extraCredit: values.extraCredit || '',
+        moneySpent: values.moneySpent,
+        frontLoad: values.frontLoad || '',
+      }
+      // clear keys that are undefined
+      Object.entries(newReview).forEach(([k, v]) => {
+        if (typeof v === 'undefined') {
+          delete newReview[k]
+        }
+      })
       console.log({ newReview, values })
+
+      const newReviewRef = firebase
+        .database()
+        .ref('/reviews/')
+        .push(newReview)
+      console.log({ newReviewRef })
+      alert('Review submitted successfully!')
+      formik.resetForm()
       // setTimeout(() => {
       //   // alert(JSON.stringify(values, null, 2))
       //   actions.setSubmitting(false)
       // }, 5000)
     },
   })
+  const [reviewField, reviewMeta] = formik.getFieldProps({ name: 'text' })
   return (
     <form onSubmit={formik.handleSubmit} className={classes.container} noValidate autoComplete="off">
       <CourseAutoComplete
@@ -93,7 +129,7 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
         name="program"
         label="Program (OMSCS or OMSA)"
         required
-        optionArray={makeLabelValueArray(['OMSCS', 'OMSA'])}
+        optionArray={makeLabelValueArray2(['OMSCS', 'OMSA'])}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
@@ -102,7 +138,7 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
         name="semester"
         label="Semester"
         required
-        optionArray={makeLabelValueArray(['Summer 2019', 'Fall 2019', 'Spring 2019', 'Fall 2018'])}
+        optionArray={ChoosableSemesters}
         onChange={(e) => console.log(e.target.value)}
         formik={formik}
       />
@@ -133,6 +169,17 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
         className={classes.textField}
         formik={formik}
       />
+      <h3>Review</h3>
+      <TextareaAutosize
+        className={classes.textField}
+        aria-label="full text of your review"
+        rows={3}
+        required
+        placeholder="Write your review here, you can use Markdown!"
+        {...reviewField}
+      />
+      {reviewMeta.touched && reviewMeta.error ? <div className="error">{reviewMeta.error}</div> : null}
+      <div className={classes.textField}>. . .</div>
       <Button
         variant="contained"
         type="submit"
@@ -141,8 +188,35 @@ const NewReview: (args: { path?: string }) => JSX.Element = () => {
       >
         Submit
       </Button>
+      <Button
+        type="button"
+        color="secondary"
+        onClick={() => {
+          if (window.confirm('are you sure you want to reset the form?')) {
+            formik.resetForm()
+          }
+        }}
+      >
+        Reset
+      </Button>
       <div>submitting {JSON.stringify(formik.isSubmitting)}</div>
     </form>
   )
 }
 export default NewReview
+
+/**
+ *
+ * deleted
+ */
+
+// const difficultyMap = {
+//   'Very Easy': 1,
+//   Easy: 2,
+//   Medium: 3,
+//   Hard: 4,
+//   'Very Hard': 5,
+// }
+// const ratingMap = { 'Strong Dislike': 1, Dislike: 1, Neutral: 1, Like: 1, 'LOVE!': 1 }
+// rating: 'Neutral' as 'Strong Dislike' | 'Dislike' | 'Neutral' | 'Like' | 'LOVE!',
+// difficulty: 'Medium' as 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard' | undefined,

@@ -50,14 +50,13 @@ function AuthApp() {
   if (!user) {
     return (
       <div>
-        <h1>My App</h1>
-        <p>Please sign-in:</p>
+        <h1>Welcome to the new OMSCentral</h1>
+        <p>In this new version, you need to sign in to view and add new reviews.</p>
         <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
     )
   } else {
-    console.log('logged in', { user })
-    return <App />
+    return <App user={user} />
   }
 }
 

@@ -8,15 +8,18 @@ import Grid from '@material-ui/core/Grid'
 import Hidden from '@material-ui/core/Hidden'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
-import NotificationsIcon from '@material-ui/icons/Notifications'
+// import NotificationsIcon from '@material-ui/icons/Notifications'
 // import Tab from '@material-ui/core/Tab'
 // import Tabs from '@material-ui/core/Tabs'
 
+import firebase from 'firebase/app'
+
 import Toolbar from '@material-ui/core/Toolbar'
-import Tooltip from '@material-ui/core/Tooltip'
+// import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import { withStyles, Theme } from '@material-ui/core/styles'
-
+import { User } from 'firebase'
+import Button from '@material-ui/core/Button'
 const lightColor = 'rgba(255, 255, 255, 0.7)'
 
 const styles = (theme: Theme) => ({
@@ -51,9 +54,10 @@ type Props = {
     menuButton: string
   }
   onDrawerToggle: ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void) | undefined
+  user: User
 }
 function Header(props: Props) {
-  const { classes, onDrawerToggle } = props
+  const { classes, user, onDrawerToggle } = props
 
   return (
     <React.Fragment>
@@ -75,10 +79,23 @@ function Header(props: Props) {
             <Grid item xs />
             <Grid item>
               <Typography className={classes.link} component="a">
-                Go to docs
+                {user.displayName}
               </Typography>
+
+              <Button
+                type="button"
+                color="secondary"
+                onClick={() => {
+                  if (window.confirm('are you sure you want to sign out?')) {
+                    firebase.auth().signOut()
+                  }
+                }}
+              >
+                Sign Out
+              </Button>
             </Grid>
-            <Grid item>
+
+            {/* <Grid item>
               <Tooltip title="Alerts • No alters">
                 <IconButton color="inherit">
                   <NotificationsIcon />
@@ -89,7 +106,7 @@ function Header(props: Props) {
               <IconButton color="inherit" className={classes.iconButtonAvatar}>
                 <Avatar className={classes.avatar} src="/static/images/avatar/1.jpg" />
               </IconButton>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Toolbar>
       </AppBar>

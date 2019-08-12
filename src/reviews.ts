@@ -10,14 +10,17 @@ export type Review = {
   id?: string
   author?: string
   course?: string
-  created?: Date
+  // created?: Date
+  created?: number
+  // updated?: Date
+  updated?: number
   difficulty?: number
   rating?: number
   semester?: string
   text?: string
-  updated?: Date
   workload?: number
-  program?: string
+  // program?: string
+  program?: number
   proctortrack?: string
   firstCourse?: string
   previousClasses?: number
@@ -30,4 +33,5 @@ export type Review = {
   proctorTrack?: string
   _editReview?: boolean
   _backup?: Review
+  [id: string]: string | boolean | number | Review | undefined
 }

@@ -9,6 +9,7 @@ import CourseDetails from './CourseDetails/CourseDetails'
 import Header from './Header'
 import NotFound from './NotFound'
 import NewReview from './NewReview/NewReview'
+import { User } from 'firebase'
 
 // import { AuthProvider } from './unused_Auth/AuthContext'
 import './App.css'
@@ -170,11 +171,12 @@ type Props = {
     appContent: string
     mainContent: string
   }
+  user: User
 }
 
 function Paperbase(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false)
-  const { classes } = props
+  const { classes, user } = props
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen)
   const [isSignedIn, setisSignedIn] = React.useState(false)
 
@@ -196,13 +198,13 @@ function Paperbase(props: Props) {
           </Hidden>
         </nav>
         <div className={classes.appContent}>
-          <Header onDrawerToggle={handleDrawerToggle} />
+          <Header user={user} onDrawerToggle={handleDrawerToggle} />
           <main className={classes.mainContent}>
             <Router>
               <CourseList path="/" />
               <CourseList path="/courses" />
               <CourseDetails path="courses/:courseID" />
-              <NewReview path="/reviews/new" />
+              <NewReview user={user} path="/reviews/new" />
               <NotFound default />
             </Router>
           </main>

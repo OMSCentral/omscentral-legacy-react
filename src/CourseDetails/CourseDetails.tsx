@@ -89,7 +89,11 @@ function CourseDetails(props: Props) {
               <li style={{ display: 'inline' }}>Rating: {round(value.average.rating)}</li>
               <li style={{ display: 'inline' }}>Workload: {round(value.average.workload)}</li>
             </ul>
-            <CourseDetailsReviewsTable reviewIDs={Object.keys(value.reviews).sort((a, b) => (a > b ? -1 : 1))} />
+            {value.reviews ? (
+              <CourseDetailsReviewsTable reviewIDs={Object.keys(value.reviews).sort((a, b) => (a > b ? -1 : 1))} />
+            ) : (
+              <div>no reviews found!</div>
+            )}
           </div>
         )}
         {/* </Typography> */}
