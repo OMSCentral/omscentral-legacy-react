@@ -53,6 +53,8 @@ function SimpleTable({ courses }: { courses: { [key: string]: Course } }) {
       options={{
         filtering: true,
         pageSize: 100,
+        headerStyle: { position: 'sticky', top: 0 },
+        maxBodyHeight: 650,
         searchFieldStyle: {
           fontSize: '0.8rem',
         },

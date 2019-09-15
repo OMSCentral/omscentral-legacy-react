@@ -11,3 +11,9 @@ this is a rewrite of the OMSCentral interface in React, TypeScript, and Material
   - https://github.com/dtinth/fiery
   - https://www.npmjs.com/package/react-firebase-hooks
   - https://dev.to/bmcmahen/using-firebase-with-react-hooks-21ap
+
+## Contributing & Local Dev
+
+Thanks for looking into this!
+
+make sure to get access to the dev firebase instance and copy over `.env.example` to `.env.local`.
