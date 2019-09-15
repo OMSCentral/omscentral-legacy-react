@@ -8,7 +8,8 @@ import CourseList from './CourseList'
 import CourseDetails from './CourseDetails/CourseDetails'
 import Header from './Header'
 import NotFound from './NotFound'
-import NewReview from './NewReview/NewReview'
+import NewReview from './Review/NewReview'
+import YourReview from './Review/YourReview'
 import { User } from 'firebase'
 
 // import { AuthProvider } from './unused_Auth/AuthContext'
@@ -202,15 +203,29 @@ function Paperbase(props: Props) {
           <main className={classes.mainContent}>
             <Router>
               <CourseList path="/" />
+              <About path="/about"></About>
               <CourseList path="/courses" />
               <CourseDetails path="courses/:courseID" />
               <NewReview user={user} path="/reviews/new" />
+              <YourReview user={user} path="/reviews" />
               <NotFound default />
             </Router>
           </main>
         </div>
       </div>
     </ThemeProvider>
+  )
+}
+
+function About({  }: { path: string }) {
+  return (
+    <div>
+      <h1>About</h1>
+      <div>
+        This is a simple about page. we dont have much yet. If you can contribute, we really need your feedback and
+        help, on <a href="https://github.com/OMSCentral/omscentral-react">the GitHub repo</a>.
+      </div>
+    </div>
   )
 }
 

@@ -1,25 +1,19 @@
 import React from 'react'
 // import clsx from 'clsx'
+// import TextField from '@material-ui/core/TextField'
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
 import CourseAutoComplete from './CourseAutoComplete'
-// import TextField from '@material-ui/core/TextField'
 import NativeSelect from './NativeSelect'
 import CustomTextField from './CustomTextField'
 import { useFormik } from 'formik'
-import Button from '@material-ui/core/Button'
 import { Review } from '../reviews'
 import firebase from 'firebase/app'
 import { User } from 'firebase'
+import Button from '@material-ui/core/Button'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
-
-/**
- *
- *
- * note: there are a lot of fields left yet to be implemented
- *
- * TODO
- *
- */
+import ReactMarkdown from 'react-markdown'
+import { useObjectVal } from 'react-firebase-hooks/database'
+import coursesData from './courses.json'
 
 const initialValues: Review = {
   program: 1,
@@ -34,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       display: 'flex',
-      flexWrap: 'wrap',
+      flexDirection: 'column',
     },
     textField: {
       marginLeft: theme.spacing(1),
@@ -63,7 +57,7 @@ function makeLabelValueArray2(strs: string[]) {
     value: i + 1,
   }))
 }
-const NewReview: (args: { path?: string; user: User }) => JSX.Element = ({ user }) => {
+const YourReview: (args: { path?: string; user: User }) => JSX.Element = ({ user }) => {
   const classes = useStyles()
 
   const formik = useFormik<Review>({
@@ -169,17 +163,44 @@ const NewReview: (args: { path?: string; user: User }) => JSX.Element = ({ user 
         className={classes.textField}
         formik={formik}
       />
-      <h3>Review</h3>
-      <TextareaAutosize
-        className={classes.textField}
-        aria-label="full text of your review"
-        rows={3}
-        required
-        placeholder="Write your review here, you can use Markdown!"
-        {...reviewField}
-      />
+      <h3>Review (Required)</h3>
+      <p>
+        Remember: You can use Markdown to format your review! (
+        <a href="https://en.wikipedia.org/wiki/Markdown#Example">What is Markdown?</a>)
+      </p>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <TextareaAutosize
+          style={{ width: '60%', fontSize: '1rem' }}
+          className={classes.textField}
+          aria-label="full text of your review"
+          rows={10}
+          required
+          placeholder={`Write your review here, you can use Markdown! Example:
+        
+# Review Headline
+
+I loved this course!
+
+## Course Material
+
+my review of course material
+
+## Workload / Group Work / projects
+
+i got lucky with group work and learned a lot!
+
+## This course is for...
+
+People who are super into Computational Journalism
+        `}
+          {...reviewField}
+        />
+        <div>
+          <ReactMarkdown source={reviewField.value || `*A preview of your markdown will appear here!*`} />
+        </div>
+      </div>
       {reviewMeta.touched && reviewMeta.error ? <div className="error">{reviewMeta.error}</div> : null}
-      <div className={classes.textField}>. . .</div>
+      <hr />
       <Button
         variant="contained"
         type="submit"
@@ -203,20 +224,51 @@ const NewReview: (args: { path?: string; user: User }) => JSX.Element = ({ user 
     </form>
   )
 }
-export default NewReview
+export default UserDetails
 
-/**
- *
- * deleted
- */
+function UserDetails(props: { path?: string; user: User }) {
+  const { user } = props
 
-// const difficultyMap = {
-//   'Very Easy': 1,
-//   Easy: 2,
-//   Medium: 3,
-//   Hard: 4,
-//   'Very Hard': 5,
-// }
-// const ratingMap = { 'Strong Dislike': 1, Dislike: 1, Neutral: 1, Like: 1, 'LOVE!': 1 }
-// rating: 'Neutral' as 'Strong Dislike' | 'Dislike' | 'Neutral' | 'Like' | 'LOVE!',
-// difficulty: 'Medium' as 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard' | undefined,
+  const { error, loading, value } = useObjectVal(firebase.database().ref('users/' + user.uid))
+  // const temp = useObjectVal(firebase.database().ref("reviews/-LaBOOf9SCpk0Xl28kQI"))
+  // const temp = useObjectVal(firebase.database().ref("reviews/-LBIlHqAvnrp2YRZvZzF"))
+  if (error) return <div>Error: {error}</div>
+  if (loading) return <div>loading: {loading}</div>
+  const reviewIds = Object.keys(value.reviews)
+  if (!reviewIds.length) return <div>no reviews found for you.</div>
+  return (
+    <div>
+      <h1> Your Reviews</h1>
+      <p>we intend to make it possible to edit your reviews. If you'd like to help, come to the github repo.</p>
+      {reviewIds.map((id) => (
+        <DisplayCourse courseId={id} />
+      ))}
+    </div>
+  )
+}
+
+function DisplayCourse({ courseId }: { courseId: string }) {
+  const { error, loading, value } = useObjectVal(firebase.database().ref('reviews/' + courseId))
+  if (error) return <div>Error: {error}</div>
+  if (loading) return <div>loading: {loading}</div>
+  // @ts-ignore
+  const courseData = coursesData[value.course]
+  if (!courseData) {
+    return (
+      <div>
+        Error: attempted to find course {value.course} but it was not found in our registry.{' '}
+        <a href="https://github.com/OMSCentral/omscentral-react/issues">Please report this as an issue on Github</a>.
+      </div>
+    )
+  }
+  const foundational = courseData.foundational ? '(foundational)' : ''
+
+  return (
+    <div>
+      <h2>
+        Course {courseData.id}: {courseData.name} {foundational}
+      </h2>
+      <pre>{JSON.stringify(value, null, 2)}</pre>
+    </div>
+  )
+}

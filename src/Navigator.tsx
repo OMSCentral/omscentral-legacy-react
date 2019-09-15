@@ -13,7 +13,7 @@ import DnsRoundedIcon from '@material-ui/icons/DnsRounded'
 import { Link } from '@reach/router'
 
 // import PermMediaOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActual"
-// import PublicIcon from "@material-ui/icons/Public"
+import PublicIcon from '@material-ui/icons/Public'
 // import SettingsEthernetIcon from "@material-ui/icons/SettingsEthernet"
 // import SettingsInputComponentIcon from "@material-ui/icons/SettingsInputComponent"
 // import TimerIcon from "@material-ui/icons/Timer"
@@ -171,6 +171,20 @@ function Navigator(props: Props & DrawerProps) {
             </ListItemText>
           </ListItem>
         </Link>
+        <a href={'https://github.com/OMSCentral/omscentral-react/issues/'}>
+          <ListItem className={clsx(classes.item, classes.itemCategory)}>
+            <ListItemIcon className={classes.itemIcon}>
+              <PublicIcon />
+            </ListItemIcon>
+            <ListItemText
+              classes={{
+                primary: classes.itemPrimary,
+              }}
+            >
+              Report Issues / Contribute
+            </ListItemText>
+          </ListItem>
+        </a>
       </List>
     </Drawer>
   )

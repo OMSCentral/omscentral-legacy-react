@@ -1,26 +1,11 @@
 import React from 'react'
 import MaterialTable from 'material-table'
-// import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
 import ReactMarkdown from 'react-markdown'
 
 import firebase from 'firebase/app'
 
-// import { useObjectVal } from 'react-firebase-hooks/database'
 import { Review } from '../types'
-
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     root: {
-//       width: '100%',
-//       marginTop: theme.spacing(3),
-//       overflowX: 'auto',
-//     },
-//     table: {
-//       minWidth: 650,
-//     },
-//   }),
-// )
 
 function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
   const [data, setData] = React.useState([] as any)
@@ -60,11 +45,11 @@ function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
     <MaterialTable
       title="Course Details"
       columns={[
-        { title: 'Date', field: 'Date', type: 'string' },
-        { title: 'Semester', field: 'Semester', type: 'string', defaultGroupOrder: 0, defaultGroupSort: 'desc' },
+        { title: 'Date', field: 'Date', type: 'string', grouping: false },
+        { title: 'Semester', field: 'Semester', type: 'string' },
         { title: 'Rating', field: 'Rating', type: 'numeric' },
         { title: 'Difficulty', field: 'Difficulty', type: 'numeric' },
-        { title: 'Workload', field: 'Workload', type: 'numeric' },
+        { title: 'Workload', field: 'Workload', type: 'numeric', grouping: false },
         { title: 'ShortReview', field: 'ShortReview', type: 'string', grouping: false },
         { title: 'FullReview', field: 'FullReview', type: 'string', hidden: true, grouping: false },
         { title: 'reviewID', field: 'reviewId', type: 'string', hidden: true, grouping: false },
@@ -77,11 +62,22 @@ function ReviewsTable({ reviewIDs }: { reviewIDs: string[] }) {
           return <div>missing review</div>
         }
         // return <div>sldkjsldkjslkj</div>
-        return <ReactMarkdown source={review.FullReview} />
+        return (
+          <div style={{ padding: '1rem' }}>
+            <ReactMarkdown source={review.FullReview} />
+          </div>
+        )
+      }}
+      localization={{
+        grouping: {
+          placeholder: 'Drag "Semester", "Rating", or "Difficulty" here to group reviews for analysis',
+        },
       }}
       options={{
         filtering: true,
         pageSize: Math.min(data.length, 100),
+        headerStyle: { position: 'sticky' as 'sticky', top: 0 },
+        maxBodyHeight: 650,
         searchFieldStyle: {
           fontSize: '0.8rem',
         },

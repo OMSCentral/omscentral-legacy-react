@@ -10,10 +10,10 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: 'gt-course-surveys-dev.firebaseapp.com',
-  databaseURL: 'https://gt-course-surveys-dev.firebaseio.com',
-  projectId: 'gt-course-surveys-dev',
-  storageBucket: 'gt-course-surveys-dev.appspot.com',
+  authDomain: `${process.env.REACT_APP_PROJECTID_KEY}.firebaseio.com`,
+  databaseURL: `https://${process.env.REACT_APP_PROJECTID_KEY}.firebaseio.com`,
+  projectId: `${process.env.REACT_APP_PROJECTID_KEY}`,
+  storageBucket: `${process.env.REACT_APP_PROJECTID_KEY}.appspot.com`,
   appId: process.env.REACT_APP_ID,
 }
 
@@ -51,7 +51,11 @@ function AuthApp() {
     return (
       <div>
         <h1>Welcome to the new OMSCentral</h1>
-        <p>In this new version, you need to sign in to view and add new reviews.</p>
+        <p>
+          Currently, you need to sign in to view and add new reviews. Don't worry, use any_fake@email.com if you like, I
+          don't really care. I do advise using the same one each time so you can get benefits of tracking and editing
+          your reviews. <br />I am also happy to take PR's to implement more nuanced authentication.
+        </p>
         <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
     )
