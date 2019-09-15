@@ -49,12 +49,15 @@ function AuthApp() {
 
   if (!user) {
     return (
-      <div>
+      <div style={{ padding: '3rem' }}>
         <h1>Welcome to the new OMSCentral</h1>
         <p>
-          Currently, you need to sign in to view and add new reviews. Don't worry, use any_fake@email.com if you like, I
-          don't really care. I do advise using the same one each time so you can get benefits of tracking and editing
-          your reviews. <br />I am also happy to take PR's to implement more nuanced authentication.
+          Currently, you need to sign in to view and add new reviews. Only the email option seems to work right now.
+        </p>
+        <p>
+          Don't worry, use any_fake@email.com if you like, I don't really care. However real email can be helpful for
+          password recovery and upcoming features like commenting
+          <br />I am also happy to take PR's to implement more nuanced authentication.
         </p>
         <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
